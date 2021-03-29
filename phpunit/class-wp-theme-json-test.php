@@ -9,15 +9,115 @@
 class WP_Theme_JSON_Test extends WP_UnitTestCase {
 
 	function test_get_settings_v0() {
-		$root_name = WP_Theme_JSON::ROOT_BLOCK_NAME;
+		$defaults = WP_Theme_JSON::ALL_BLOCKS_NAME;
+		$root     = WP_Theme_JSON::ROOT_BLOCK_NAME;
 		$theme_json = new WP_Theme_JSON(
 			array(
 				'settings' => array(
-					$root_name => array(
+					$defaults => array(
+						'color' => array(
+							'customGradient' => false,
+							'palette' => array(
+								array(
+									'slug'  => 'white',
+									'color' => 'white',
+								),
+								array(
+									'slug'  => 'black',
+									'color' => 'black',
+								),
+							),
+						),
+					),
+					$root => array(
 						'color'       => array(
 							'custom' => false,
+							'palette' => array(
+								array(
+									'slug' => 'grey',
+									'color' => 'grey',
+								),
+							),
 						),
 						'invalid/key' => 'value',
+					),
+					'core/heading/h1' => array(
+						'color' => array(
+							'customGradient' => false,
+							'palette' => array(
+								array(
+									'slug'  => 'white',
+									'color' => 'white',
+								),
+								array(
+									'slug'  => 'black',
+									'color' => 'black',
+								),
+							),
+						),
+					),
+					'core/heading/h2' => array(
+						'color' => array(
+							'custom'  => false,
+							'palette' => array(
+								array(
+									'slug'  => 'grey',
+									'color' => 'grey',
+								),
+							),
+						),
+					),
+					'core/post-title/h1' => array(
+						'color' => array(
+							'customGradient' => false,
+							'palette' => array(
+								array(
+									'slug'  => 'white',
+									'color' => 'white',
+								),
+								array(
+									'slug'  => 'black',
+									'color' => 'black',
+								),
+							),
+						),
+					),
+					'core/post-title/h2' => array(
+						'color' => array(
+							'custom'  => false,
+							'palette' => array(
+								array(
+									'slug'  => 'grey',
+									'color' => 'grey',
+								),
+							),
+						),
+					),
+					'core/query-title/h1' => array(
+						'color' => array(
+							'customGradient' => false,
+							'palette' => array(
+								array(
+									'slug'  => 'white',
+									'color' => 'white',
+								),
+								array(
+									'slug'  => 'black',
+									'color' => 'black',
+								),
+							),
+						),
+					),
+					'core/query-title/h2' => array(
+						'color' => array(
+							'custom'  => false,
+							'palette' => array(
+								array(
+									'slug'  => 'grey',
+									'color' => 'grey',
+								),
+							),
+						),
 					),
 				),
 				'styles'   => array(
@@ -35,6 +135,51 @@ class WP_Theme_JSON_Test extends WP_UnitTestCase {
 		$expected = array(
 			'color' => array(
 				'custom' => false,
+				'customGradient' => false,
+				'palette' => array(
+					array(
+						'slug'  => 'grey',
+						'color' => 'grey',
+					)
+				),
+			),
+			'blocks' => array(
+				'core/heading' => array(
+					'color' => array(
+						'customGradient' => false,
+						'custom'         => false,
+						'palette'        => array(
+							array(
+								'slug'  => 'grey',
+								'color' => 'grey',
+							)
+						),
+					),
+				),
+				'core/post-title' => array(
+					'color' => array(
+						'customGradient' => false,
+						'custom'         => false,
+						'palette'        => array(
+							array(
+								'slug'  => 'grey',
+								'color' => 'grey',
+							)
+						),
+					),
+				),
+				'core/query-title' => array(
+					'color' => array(
+						'customGradient' => false,
+						'custom'         => false,
+						'palette'        => array(
+							array(
+								'slug'  => 'grey',
+								'color' => 'grey',
+							)
+						),
+					),
+				),
 			),
 		);
 
@@ -100,8 +245,12 @@ class WP_Theme_JSON_Test extends WP_UnitTestCase {
 							'text'    => 'value',
 							'palette' => array(
 								array(
-									'slug'  => 'grey',
-									'color' => 'grey',
+									'slug'  => 'white',
+									'color' => 'white',
+								),
+								array(
+									'slug'  => 'black',
+									'color' => 'black',
 								),
 							),
 						),
@@ -118,6 +267,16 @@ class WP_Theme_JSON_Test extends WP_UnitTestCase {
 							),
 						),
 						'misc'       => 'value',
+					),
+					$root_name => array(
+						'color'      => array(
+							'palette' => array(
+								array(
+									'slug'  => 'grey',
+									'color' => 'grey',
+								),
+							),
+						),
 					),
 					'core/group'     => array(
 						'custom' => array(
@@ -149,17 +308,49 @@ class WP_Theme_JSON_Test extends WP_UnitTestCase {
 							),
 						),
 					),
+					'core/heading/h1' => array(
+						'color' => array(
+							'link' => '#111',
+						),
+						'typography' => array(
+							'fontSize' => '1em'
+						)
+					),
+					'core/heading/h2' => array(
+						'color' => array(
+							'link' => '#222',
+						),
+						'typography' => array(
+							'fontSize' => '2em'
+						)
+					),
+					'core/post-title/h3' => array(
+						'color' => array(
+							'link' => '#333'
+						),
+						'typography' => array(
+							'fontSize' => '3em'
+						),
+					),
+					'core/query-title/h4' => array(
+						'color' => array(
+							'link' => '#444'
+						),
+						'typography' => array(
+							'fontSize' => '4em'
+						),
+					),
 				),
 				'misc'     => 'value',
 			)
 		);
 
 		$this->assertEquals(
-			':root{--wp--preset--color--grey: grey;--wp--preset--font-family--small: 14px;--wp--preset--font-family--big: 41px;}.wp-block-group{--wp--custom--base-font: 16;--wp--custom--line-height--small: 1.2;--wp--custom--line-height--medium: 1.4;--wp--custom--line-height--large: 1.8;}:root{--wp--style--color--link: #111;color: var(--wp--preset--color--grey);}.wp-block-group{--wp--style--color--link: #333;padding-top: 12px;padding-bottom: 24px;}.has-grey-color{color: grey !important;}.has-grey-background-color{background-color: grey !important;}',
+			':root{--wp--preset--color--grey: grey;--wp--preset--font-family--small: 14px;--wp--preset--font-family--big: 41px;}.wp-block-group{--wp--custom--base-font: 16;--wp--custom--line-height--small: 1.2;--wp--custom--line-height--medium: 1.4;--wp--custom--line-height--large: 1.8;}:root{color: var(--wp--preset--color--grey);}a{color: #111;}.wp-block-group{padding-top: 12px;padding-bottom: 24px;}.wp-block-group a{color: #333;}h1{font-size: 1em;}h1 a{color: #111;}h2{font-size: 2em;}h2 a{color: #222;}h3.wp-block-post-title{font-size: 3em;}h3.wp-block-post-title a{color: #222;}h4.wp-block-query-title{font-size: 4em;}h4.wp-block-query-title a{color: #444;}.has-grey-color{color: grey !important;}.has-grey-background-color{background-color: grey !important;}',
 			$theme_json->get_stylesheet()
 		);
 		$this->assertEquals(
-			':root{--wp--style--color--link: #111;color: var(--wp--preset--color--grey);}.wp-block-group{--wp--style--color--link: #333;padding-top: 12px;padding-bottom: 24px;}.has-grey-color{color: grey !important;}.has-grey-background-color{background-color: grey !important;}',
+			':root{color: var(--wp--preset--color--grey);}a{color: #111;}.wp-block-group{padding-top: 12px;padding-bottom: 24px;}.wp-block-group a{color: #333;}h1{font-size: 1em;}h1 a{color: #111;}h2{font-size: 2em;}h2 a{color: #222;}h3.wp-block-post-title{font-size: 3em;}h3.wp-block-post-title a{color: #222;}h4.wp-block-query-title{font-size: 4em;}h4.wp-block-query-title a{color: #444;}.has-grey-color{color: grey !important;}.has-grey-background-color{background-color: grey !important;}',
 			$theme_json->get_stylesheet( 'block_styles' )
 		);
 		$this->assertEquals(
@@ -236,6 +427,80 @@ class WP_Theme_JSON_Test extends WP_UnitTestCase {
 								),
 							),
 						),
+						'core/heading' => array(
+							'color' => array(
+								'text' => '#123456',
+							),
+							'elements' => array(
+								'h1' => array(
+									'typography' => array(
+										'fontSize' => '60px',
+									),
+								),
+								'h2' => array(
+									'typography' => array(
+										'fontSize' => '30px',
+									),
+								),
+								'h3' => array(
+									'typography' => array(
+										'fontSize' => '20px',
+									),
+								),
+								'h4' => array(
+									'typography' => array(
+										'fontSize' => '15px',
+									),
+								),
+								'h5' => array(
+									'typography' => array(
+										'fontSize' => '12px',
+									),
+								),
+								'h6' => array(
+									'typography' => array(
+										'fontSize' => '10px',
+									),
+								),
+							),
+						),
+						'core/post-title' => array(
+							'color' => array(
+								'text' => '#123456',
+							),
+							'elements' => array(
+								'h1' => array(
+									'typography' => array(
+										'fontSize' => '60px',
+									),
+								),
+								'h2' => array(
+									'typography' => array(
+										'fontSize' => '30px',
+									),
+								),
+								'h3' => array(
+									'typography' => array(
+										'fontSize' => '20px',
+									),
+								),
+								'h4' => array(
+									'typography' => array(
+										'fontSize' => '15px',
+									),
+								),
+								'h5' => array(
+									'typography' => array(
+										'fontSize' => '12px',
+									),
+								),
+								'h6' => array(
+									'typography' => array(
+										'fontSize' => '10px',
+									),
+								),
+							),
+						),
 					),
 				),
 				'misc'     => 'value',
@@ -243,11 +508,11 @@ class WP_Theme_JSON_Test extends WP_UnitTestCase {
 		);
 
 		$this->assertEquals(
-			':root{--wp--preset--color--grey: grey;--wp--preset--font-family--small: 14px;--wp--preset--font-family--big: 41px;}.wp-block-group{--wp--custom--base-font: 16;--wp--custom--line-height--small: 1.2;--wp--custom--line-height--medium: 1.4;--wp--custom--line-height--large: 1.8;}:root{--wp--style--color--link: #111;color: var(--wp--preset--color--grey);}.wp-block-group{--wp--style--color--link: #333;padding-top: 12px;padding-bottom: 24px;}.has-grey-color{color: grey !important;}.has-grey-background-color{background-color: grey !important;}',
+			':root{--wp--preset--color--grey: grey;--wp--preset--font-family--small: 14px;--wp--preset--font-family--big: 41px;}.wp-block-group{--wp--custom--base-font: 16;--wp--custom--line-height--small: 1.2;--wp--custom--line-height--medium: 1.4;--wp--custom--line-height--large: 1.8;}:root{color: var(--wp--preset--color--grey);}a{color: #111;}.wp-block-group{padding-top: 12px;padding-bottom: 24px;}.wp-block-group a{color: #333;}h1,h2,h3,h4,h5,h6{color: #123456;}h1{font-size: 60px;}h2{font-size: 30px;}h3{font-size: 20px;}h4{font-size: 15px;}h5{font-size: 12px;}h6{font-size: 10px;}.wp-block-post-title{color: #123456;}h1.wp-block-post-title{font-size: 60px;}h2.wp-block-post-title{font-size: 30px;}h3.wp-block-post-title{font-size: 20px;}h4.wp-block-post-title{font-size: 15px;}h5.wp-block-post-title{font-size: 12px;}h6.wp-block-post-title{font-size: 10px;}.has-grey-color{color: grey !important;}.has-grey-background-color{background-color: grey !important;}',
 			$theme_json->get_stylesheet()
 		);
 		$this->assertEquals(
-			':root{--wp--style--color--link: #111;color: var(--wp--preset--color--grey);}.wp-block-group{--wp--style--color--link: #333;padding-top: 12px;padding-bottom: 24px;}.has-grey-color{color: grey !important;}.has-grey-background-color{background-color: grey !important;}',
+			':root{color: var(--wp--preset--color--grey);}a{color: #111;}.wp-block-group{padding-top: 12px;padding-bottom: 24px;}.wp-block-group a{color: #333;}h1,h2,h3,h4,h5,h6{color: #123456;}h1{font-size: 60px;}h2{font-size: 30px;}h3{font-size: 20px;}h4{font-size: 15px;}h5{font-size: 12px;}h6{font-size: 10px;}.wp-block-post-title{color: #123456;}h1.wp-block-post-title{font-size: 60px;}h2.wp-block-post-title{font-size: 30px;}h3.wp-block-post-title{font-size: 20px;}h4.wp-block-post-title{font-size: 15px;}h5.wp-block-post-title{font-size: 12px;}h6.wp-block-post-title{font-size: 10px;}.has-grey-color{color: grey !important;}.has-grey-background-color{background-color: grey !important;}',
 			$theme_json->get_stylesheet( 'block_styles' )
 		);
 		$this->assertEquals(
@@ -312,14 +577,18 @@ class WP_Theme_JSON_Test extends WP_UnitTestCase {
 				),
 				'styles'   => array(
 					'blocks' => array(
-						'core/heading/h2' => array(
-							'color'      => array(
-								'text'       => 'red',
-								'background' => 'blue',
-							),
-							'typography' => array(
-								'fontSize'   => '12px',
-								'lineHeight' => '1.3',
+						'core/heading' => array(
+							'elements' => array(
+								'h2' => array(
+									'color'      => array(
+										'text'       => 'red',
+										'background' => 'blue',
+									),
+									'typography' => array(
+										'fontSize'   => '12px',
+										'lineHeight' => '1.3',
+									),
+								),
 							),
 						),
 					),
