@@ -40,7 +40,6 @@ function Navigation( {
 	updateInnerBlocks,
 	className,
 	hasSubmenuIndicatorSetting = true,
-	hasItemJustificationControls = attributes.orientation === 'horizontal',
 } ) {
 	const [ isPlaceholderShown, setIsPlaceholderShown ] = useState(
 		! hasExistingNavItems
@@ -108,21 +107,25 @@ function Navigation( {
 		);
 	}
 
+	const justifyAllowedControls =
+		attributes.orientation === 'vertical'
+			? [ 'left', 'center', 'right' ]
+			: [ 'left', 'center', 'right', 'space-between' ];
+
 	return (
 		<>
 			<BlockControls>
-				{ hasItemJustificationControls && (
-					<JustifyToolbar
-						value={ attributes.itemsJustification }
-						onChange={ ( value ) =>
-							setAttributes( { itemsJustification: value } )
-						}
-						popoverProps={ {
-							position: 'bottom right',
-							isAlternate: true,
-						} }
-					/>
-				) }
+				<JustifyToolbar
+					value={ attributes.itemsJustification }
+					allowedControls={ justifyAllowedControls }
+					onChange={ ( value ) =>
+						setAttributes( { itemsJustification: value } )
+					}
+					popoverProps={ {
+						position: 'bottom right',
+						isAlternate: true,
+					} }
+				/>
 				<ToolbarGroup>{ navigatorToolbarButton }</ToolbarGroup>
 			</BlockControls>
 			{ navigatorModal }
