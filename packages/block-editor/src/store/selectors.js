@@ -1818,7 +1818,7 @@ export const __experimentalGetParsedPattern = createSelector(
 				if ( ! isBlockAllowedInEditor ) {
 					return false;
 				}
-				block.blocks?.forEach( ( innerBlock ) => {
+				block.innerBlocks?.forEach( ( innerBlock ) => {
 					blocksQueue.push( innerBlock );
 				} );
 			}
