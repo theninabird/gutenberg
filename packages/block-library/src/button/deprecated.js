@@ -21,11 +21,16 @@ import { compose } from '@wordpress/compose';
 import getColorAndStyleProps from './color-props';
 
 const migrateBorderRadius = ( attributes ) => {
-	const { borderRadius, style, ...newAttributes } = attributes;
+	const { borderRadius, ...newAttributes } = attributes;
+
+	if ( ! borderRadius && borderRadius !== 0 ) {
+		return newAttributes;
+	}
+
 	return {
 		...newAttributes,
 		style: {
-			...style,
+			...newAttributes.style,
 			border: { radius: borderRadius },
 		},
 	};
