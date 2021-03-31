@@ -24,10 +24,19 @@ function useObservableState( initialState, onStateChange ) {
 	const [ state, setState ] = useState( initialState );
 	return [
 		state,
-		( value ) => {
-			setState( value );
+		( valueOrSetter ) => {
+			let syncState;
+			if ( typeof valueOrSetter === 'function' ) {
+				setState( ( value ) => {
+					syncState = valueOrSetter( value );
+					return syncState;
+				} );
+			} else {
+				syncState = valueOrSetter;
+				setState( valueOrSetter );
+			}
 			if ( onStateChange ) {
-				onStateChange( value );
+				onStateChange( syncState );
 			}
 		},
 	];
@@ -64,7 +73,7 @@ function Dropdown(
 	}, [] );
 
 	function toggle() {
-		setIsOpen( ! isOpen );
+		setIsOpen( ( value ) => ! value );
 	}
 
 	/**
