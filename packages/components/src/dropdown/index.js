@@ -91,7 +91,7 @@ function Dropdown(
 		}
 		// The rest is only for back-compat and could be removed at some point.
 		// Attempts determination that the active element is inside Dropdown.
-		// Prone to failure in UAs that do not focus button elements on click
+		// Prone to failure in UAs that do not focus pressed button elements
 		// See: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#clicking_and_focus
 		const { ownerDocument } = containerRef.current;
 		if ( ! containerRef.current.contains( ownerDocument.activeElement ) ) {
@@ -144,6 +144,7 @@ function Dropdown(
 			{ isOpen && (
 				<Popover
 					position={ position }
+					onClose={ close }
 					onFocusOutside={ onFocusOutsidePopover }
 					expandOnMobile={ expandOnMobile }
 					headerTitle={ headerTitle }
