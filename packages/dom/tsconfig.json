@@ -11,6 +11,7 @@
 		"src/dom/document-has-selection.js",
 		"src/dom/document-has-text-selection.js",
 		"src/dom/get-rectangle-from-range.js",
+		"src/dom/is-html-input-element.js",
 		"src/dom/is-number-input.js",
 		"src/dom/is-text-field.js",
 		"src/utils/**/*",
