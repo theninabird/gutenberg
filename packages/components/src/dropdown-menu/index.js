@@ -43,7 +43,7 @@ function DropdownMenu( {
 	icon = menu,
 	label,
 	popoverProps,
-	toggleProps: { ref: togglePropsRef, ...restOfToggleProps },
+	toggleProps: { ref: togglePropsRef, ...restOfToggleProps } = {},
 	menuProps,
 	disableOpenOnArrowDown = false,
 	text,
@@ -138,7 +138,7 @@ function DropdownMenu( {
 						aria-expanded={ isOpen }
 						label={ label }
 						text={ text }
-						showTooltip={ restOfToggleProps?.showTooltip ?? true }
+						showTooltip={ mergedToggleProps?.showTooltip ?? true }
 					>
 						{ mergedToggleProps.children }
 					</ButtonComponent>
