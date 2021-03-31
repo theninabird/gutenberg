@@ -7,17 +7,19 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useState, useRef } from '@wordpress/element';
+import { useCallback, useRef } from '@wordpress/element';
 import {
 	Button,
 	ButtonGroup,
+	Dropdown as BaseDropdown,
 	KeyboardShortcuts,
 	PanelBody,
 	RangeControl,
 	TextControl,
 	ToolbarButton,
-	Popover,
+	ToolbarItem,
 } from '@wordpress/components';
+import { useMergeRefs } from '@wordpress/compose';
 import {
 	BlockControls,
 	InspectorControls,
@@ -107,76 +109,87 @@ function URLPicker( {
 	onToggleOpenInNewTab,
 	anchorRef,
 } ) {
-	const [ isURLPickerOpen, setIsURLPickerOpen ] = useState( false );
 	const urlIsSet = !! url;
 	const urlIsSetandSelected = urlIsSet && isSelected;
-	const openLinkControl = () => {
-		setIsURLPickerOpen( true );
-		return false; // prevents default behaviour for event
+	const refDropdown = useRef();
+	const addLink = () => {
+		refDropdown.current.open();
 	};
-	const unlinkButton = () => {
+	const removeLink = () => {
 		setAttributes( {
 			url: undefined,
 			linkTarget: undefined,
 			rel: undefined,
 		} );
-		setIsURLPickerOpen( false );
 	};
-	const linkControl = ( isURLPickerOpen || urlIsSetandSelected ) && (
-		<Popover
-			position="bottom center"
-			onClose={ () => setIsURLPickerOpen( false ) }
-			anchorRef={ anchorRef?.current }
-		>
-			<LinkControl
-				className="wp-block-navigation-link__inline-link-input"
-				value={ { url, opensInNewTab } }
-				onChange={ ( {
-					url: newURL = '',
-					opensInNewTab: newOpensInNewTab,
-				} ) => {
-					setAttributes( { url: newURL } );
 
-					if ( opensInNewTab !== newOpensInNewTab ) {
-						onToggleOpenInNewTab( newOpensInNewTab );
-					}
-				} }
+	const renderToolbarItem = ( {
+		ref: toolbarItemRef,
+		...toolbarItemProps
+	} ) => {
+		const useToggle = ( { ref: toggleRef } ) => {
+			const ref = useMergeRefs( [ toolbarItemRef, toggleRef ] );
+			const toggleProps = {
+				ref,
+				name: 'link',
+				...toolbarItemProps,
+				...( ! urlIsSet
+					? {
+							icon: link,
+							title: __( 'Link' ),
+							shortcut: displayShortcut.primary( 'k' ),
+					  }
+					: {
+							icon: linkOff,
+							title: __( 'Unlink' ),
+							shortcut: displayShortcut.primaryShift( 'k' ),
+							isActive: true,
+							onClick: removeLink,
+					  } ),
+			};
+			return <ToolbarButton name="link" { ...toggleProps } />;
+		};
+		return (
+			<BaseDropdown
+				autoClose={ false }
+				openOnMount={ urlIsSetandSelected }
+				position="bottom center"
+				popoverProps={ { anchorRef: anchorRef?.current } }
+				ref={ refDropdown }
+				renderToggle={ useToggle }
+				renderContent={ () => (
+					<LinkControl
+						className="wp-block-navigation-link__inline-link-input"
+						value={ { url, opensInNewTab } }
+						onChange={ ( {
+							url: newURL = '',
+							opensInNewTab: newOpensInNewTab,
+						} ) => {
+							setAttributes( { url: newURL } );
+
+							if ( opensInNewTab !== newOpensInNewTab ) {
+								onToggleOpenInNewTab( newOpensInNewTab );
+							}
+						} }
+					/>
+				) }
 			/>
-		</Popover>
-	);
+		);
+	};
 	return (
 		<>
 			<BlockControls group="block">
-				{ ! urlIsSet && (
-					<ToolbarButton
-						name="link"
-						icon={ link }
-						title={ __( 'Link' ) }
-						shortcut={ displayShortcut.primary( 'k' ) }
-						onClick={ openLinkControl }
-					/>
-				) }
-				{ urlIsSetandSelected && (
-					<ToolbarButton
-						name="link"
-						icon={ linkOff }
-						title={ __( 'Unlink' ) }
-						shortcut={ displayShortcut.primaryShift( 'k' ) }
-						onClick={ unlinkButton }
-						isActive={ true }
-					/>
-				) }
+				<ToolbarItem>{ renderToolbarItem }</ToolbarItem>
 			</BlockControls>
 			{ isSelected && (
 				<KeyboardShortcuts
 					bindGlobal
 					shortcuts={ {
-						[ rawShortcut.primary( 'k' ) ]: openLinkControl,
-						[ rawShortcut.primaryShift( 'k' ) ]: unlinkButton,
+						[ rawShortcut.primary( 'k' ) ]: addLink,
+						[ rawShortcut.primaryShift( 'k' ) ]: removeLink,
 					} }
 				/>
 			) }
-			{ linkControl }
 		</>
 	);
 }
