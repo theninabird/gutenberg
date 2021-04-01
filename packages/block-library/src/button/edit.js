@@ -11,7 +11,7 @@ import { useCallback, useRef } from '@wordpress/element';
 import {
 	Button,
 	ButtonGroup,
-	Dropdown as BaseDropdown,
+	Dropdown,
 	KeyboardShortcuts,
 	PanelBody,
 	RangeControl,
@@ -111,23 +111,22 @@ function URLPicker( {
 } ) {
 	const urlIsSet = !! url;
 	const urlIsSetandSelected = urlIsSet && isSelected;
-	const refDropdown = useRef();
-	const addLink = () => {
-		refDropdown.current.open();
-	};
-	const removeLink = () => {
-		setAttributes( {
-			url: undefined,
-			linkTarget: undefined,
-			rel: undefined,
-		} );
-	};
 
 	const renderToolbarItem = ( {
 		ref: toolbarItemRef,
 		...toolbarItemProps
 	} ) => {
-		const useToggle = ( { ref: toggleRef } ) => {
+		const useToggle = ( { ref: toggleRef, onToggle, onClose } ) => {
+			const onRemove = ( { type } ) => {
+				setAttributes( {
+					url: undefined,
+					linkTarget: undefined,
+					rel: undefined,
+				} );
+				if ( type === 'keydown' ) {
+					onClose();
+				}
+			};
 			const ref = useMergeRefs( [ toolbarItemRef, toggleRef ] );
 			const toggleProps = {
 				ref,
@@ -144,18 +143,28 @@ function URLPicker( {
 							title: __( 'Unlink' ),
 							shortcut: displayShortcut.primaryShift( 'k' ),
 							isActive: true,
-							onClick: removeLink,
+							onClick: onRemove,
 					  } ),
 			};
-			return <ToolbarButton name="link" { ...toggleProps } />;
+			return (
+				<>
+					<ToolbarButton name="link" { ...toggleProps } />
+					<KeyboardShortcuts
+						bindGlobal
+						shortcuts={ {
+							[ rawShortcut.primary( 'k' ) ]: onToggle,
+							[ rawShortcut.primaryShift( 'k' ) ]: onRemove,
+						} }
+					/>
+				</>
+			);
 		};
 		return (
-			<BaseDropdown
+			<Dropdown
 				autoClose={ false }
 				openOnMount={ urlIsSetandSelected }
 				position="bottom center"
 				popoverProps={ { anchorRef: anchorRef?.current } }
-				ref={ refDropdown }
 				renderToggle={ useToggle }
 				renderContent={ () => (
 					<LinkControl
@@ -181,15 +190,6 @@ function URLPicker( {
 			<BlockControls group="block">
 				<ToolbarItem>{ renderToolbarItem }</ToolbarItem>
 			</BlockControls>
-			{ isSelected && (
-				<KeyboardShortcuts
-					bindGlobal
-					shortcuts={ {
-						[ rawShortcut.primary( 'k' ) ]: addLink,
-						[ rawShortcut.primaryShift( 'k' ) ]: removeLink,
-					} }
-				/>
-			) }
 		</>
 	);
 }
