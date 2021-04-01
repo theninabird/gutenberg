@@ -6,14 +6,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import {
-	forwardRef,
-	useCallback,
-	useEffect,
-	useImperativeHandle,
-	useRef,
-	useState,
-} from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -42,24 +35,21 @@ function useObservableState( initialState, onStateChange ) {
 	];
 }
 
-function Dropdown(
-	{
-		autoClose = true,
-		className,
-		contentClassName,
-		expandOnMobile,
-		focusOnMount,
-		headerTitle,
-		onClose,
-		onToggle,
-		openOnMount = false,
-		popoverProps,
-		position = 'bottom right',
-		renderContent,
-		renderToggle,
-	},
-	ref
-) {
+export default function Dropdown( {
+	autoClose = true,
+	className,
+	contentClassName,
+	expandOnMobile,
+	focusOnMount,
+	headerTitle,
+	onClose,
+	onToggle,
+	openOnMount = false,
+	popoverProps,
+	position = 'bottom right',
+	renderContent,
+	renderToggle,
+} ) {
 	const containerRef = useRef();
 	const toggleRef = useRef();
 	const isTogglePressed = useRef();
@@ -106,12 +96,6 @@ function Dropdown(
 			setIsOpen( false );
 		}
 	}
-
-	useImperativeHandle( ref, () => ( {
-		close,
-		toggle,
-		open: () => setIsOpen( true ),
-	} ) );
 
 	const setToggleRef = useCallback( ( node ) => {
 		if ( node ) {
@@ -165,5 +149,3 @@ function Dropdown(
 		</div>
 	);
 }
-
-export default forwardRef( Dropdown );
