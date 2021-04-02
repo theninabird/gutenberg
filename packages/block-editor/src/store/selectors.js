@@ -1839,28 +1839,106 @@ export const __experimentalGetAllowedPatterns = createSelector(
 
 /**
  * Returns the list of patterns based on specific `scope` and
- * a block's name.
- * `inserter` scope should be handled differently, probably in
- * combination with `__experimentalGetAllowedPatterns`.
- * For now `__experimentalGetScopedBlockPatterns` handles properly
- * all other scopes.
- * Since both APIs are experimental we should revisit this.
+ * a block's name or array of block names to find matching pattens.
+ * Internally is used `__experimentalGetAllowedPatterns` to have a
+ * single entry point for getting allowed patterns based on the `rootClientId`.
+ * TODO Since both APIs are experimental we should probably revisit this.
  *
  * @param {Object} state Editor state.
  * @param {string} scope Block pattern scope.
- * @param {string} blockName Block's name.
+ * @param {string|string[]} blockNames Block's name or array of block names to find matching pattens.
+ * @param {?string} rootClientId Optional target root client ID.
  *
  * @return {Array} The list of matched block patterns based on provided scope and block name.
  */
+// TODO add tests
 export const __experimentalGetScopedBlockPatterns = createSelector(
-	( state, scope, blockName ) => {
-		if ( ! scope && ! blockName ) return EMPTY_ARRAY;
-		const patterns = state.settings.__experimentalBlockPatterns;
+	( state, scope, blockNames, rootClientId = null ) => {
+		if ( ! ( scope && blockNames ) ) return EMPTY_ARRAY;
+		const patterns = __experimentalGetAllowedPatterns(
+			state,
+			rootClientId
+		);
+		const normalizedBlockNames = Array.isArray( blockNames )
+			? blockNames
+			: [ blockNames ];
 		return patterns.filter( ( pattern ) =>
-			pattern.scope?.[ scope ]?.includes?.( blockName )
+			pattern?.scope?.[ scope ]?.some?.( ( blockName ) =>
+				normalizedBlockNames.includes( blockName )
+			)
 		);
 	},
-	( state ) => [ state.settings.__experimentalBlockPatterns ]
+	( state, rootClientId ) => [
+		...__experimentalGetAllowedPatterns.getDependants(
+			state,
+			rootClientId
+		),
+	]
+);
+
+/**
+ * Determines the items that appear in the available pattern transforms list.
+ * There is special handling in two cases:
+ * 1. For some blocks (`blocksToSkip`) when multiple blocks are selected,
+ * don't show any transforms, as it doesn't make sense to try to be too smart.
+ * 2. There are some blocks (`nestedSingleBlocksToHandle`) that makes sense to
+ * replace everything when they are the only block selected.
+ *
+ * For the rest blocks we return a first set of possible eligible block patterns,
+ * by checking the `scope` Patterns API. We still have to recurse through block
+ * pattern's blocks and try to find matches from the selected blocks. Now this
+ * happens in the consumer to avoid heavy operations in the selector.
+ *
+ * @param {Object}  state Editor state.
+ * @param {Object[]} blocks The selected blocks.
+ * @param {?string} rootClientId Optional root client ID of block list.
+ *
+ * @return {WPBlockPattern[]} Items that are eligible for a pattern transformation.
+ */
+// TODO tests
+export const __experimentalGetPatternTransformItems = createSelector(
+	( state, blocks, rootClientId = null ) => {
+		if ( ! blocks ) return EMPTY_ARRAY;
+		/**
+		 * For now we only hanlde blocks without InnerBlocks and take into account
+		 * the `role` property of block's attributes for the transformation.
+		 * Noting that blocks have been retrieved through `getBlock`, that doen't
+		 * return the child inner blocks of an inner block controller, so we still
+		 * need to check for this case too.
+		 */
+		if (
+			blocks.some(
+				( { clientId, innerBlocks } ) =>
+					innerBlocks.length ||
+					areInnerBlocksControlled( state, clientId )
+			)
+		) {
+			return EMPTY_ARRAY;
+		}
+
+		// Create a Set of the selected block names that is used in patterns filtering.
+		const selectedBlockNames = Array.from(
+			new Set( blocks.map( ( { name } ) => name ) )
+		);
+		/**
+		 * Here we will return first set of possible eligible block patterns,
+		 * by checking the `scope` property. We still have to recurse through
+		 * block pattern's blocks and try to find matches from the selected blocks.
+		 * Now this happens in the consumer to avoid heavy operations in the selector.
+		 */
+		return __experimentalGetScopedBlockPatterns(
+			state,
+			'transform',
+			selectedBlockNames,
+			rootClientId
+		);
+	},
+	( state, rootClientId ) => [
+		...__experimentalGetScopedBlockPatterns.getDependants(
+			state,
+			rootClientId
+		),
+	]
 );
 
 /**
